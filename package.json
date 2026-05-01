@@ -1,11 +1,12 @@
 {
   "name": "loan-for-lawn",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "start": "npx http-server dist -p 5172 -s",
     "lint": "eslint .",
     "preview": "vite preview"
   },
