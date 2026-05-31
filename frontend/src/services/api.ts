@@ -62,7 +62,7 @@ export async function createLoan(amount: number, interest_rate: number, due_date
 
 export async function repayLoan(id: string): Promise<{ loan: Loan; message: string }> {
   const res = await fetch(`${API_BASE}/loans/${id}/repay`, {
-    method: "PATCH",
+    method: "POST",
     headers: { ...authHeaders() },
   });
   return handleResponse<{ loan: Loan; message: string }>(res);

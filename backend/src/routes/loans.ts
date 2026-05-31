@@ -8,6 +8,6 @@ router.use(authenticateToken);
 router.post("/", createLoan);
 router.get("/", getLoans);
 router.get("/:id", getLoanById);
-router.patch("/:id/repay", repayLoan);
+router.post("/:id/repay", repayLoan);
 
 export default router;

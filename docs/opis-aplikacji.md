@@ -20,6 +20,7 @@ kursów walut względem PLN.
 - Gotowe oferty pożyczek do wyboru – użytkownik wybiera jedną z 8 predefiniowanych opcji
 - Oprocentowanie zależne od kwoty i okresu: im wyższa kwota i krótszy czas, tym wyższe oprocentowanie
 - Automatyczna kalkulacja miesięcznej raty i łącznej kwoty spłaty dla każdej oferty
+- Jednoklikowe zaciągnięcie pożyczki po wybraniu oferty
 - Możliwość spłaty aktywnej pożyczki jednym kliknięciem z poziomu dashboardu
 - Przeglądanie wszystkich pożyczek użytkownika
 - Podgląd statusu pożyczki (aktywna/spłacona)

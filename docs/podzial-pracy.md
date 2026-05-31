@@ -99,7 +99,7 @@ loan-for-lawn/
 - `GET /api/loans` - Lista pożyczek użytkownika
 - `POST /api/loans` - Utworzenie nowej pożyczki (predefiniowane oferty)
 - `GET /api/loans/:id` - Szczegóły pożyczki
-- `PATCH /api/loans/:id/repay` - Spłata aktywnej pożyczki
+- `POST /api/loans/:id/repay` - Spłata aktywnej pożyczki
 
 ### Kursy walut (publiczne)
 - `GET /api/rates` - Kursy walut (opcjonalny filtr `?currencies=EUR,USD`)

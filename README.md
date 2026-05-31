@@ -139,7 +139,7 @@ loan-for-lawn/
 | GET | `/api/loans` | Lista pożyczek |
 | POST | `/api/loans` | Nowa pożyczka (predefiniowane oferty) |
 | GET | `/api/loans/:id` | Szczegóły pożyczki |
-| PATCH | `/api/loans/:id/repay` | Spłata aktywnej pożyczki |
+| POST | `/api/loans/:id/repay` | Spłata aktywnej pożyczki |
 
 ### Kursy walut
 | Metoda | Ścieżka | Opis |

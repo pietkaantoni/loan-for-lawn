@@ -146,6 +146,6 @@ więc konta testowe są w pełni funkcjonalne.
 ## Operacje na pożyczkach
 
 ### Spłata pożyczki
-Użytkownik może spłacić aktywną pożyczkę poprzez endpoint `PATCH /api/loans/:id/repay`.
+Użytkownik może spłacić aktywną pożyczkę poprzez endpoint `POST /api/loans/:id/repay`.
 Po udanej spłacie status pożyczki zmienia się z `'active'` na `'paid'`.
 Spłacić można tylko pożyczkę o statusie `'active'` należącą do zalogowanego użytkownika.

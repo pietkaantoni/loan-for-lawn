@@ -36,12 +36,12 @@ function calcDueDate(months: number): string {
 
 export default function LoanPage() {
   const [selected, setSelected] = useState<LoanOffer | null>(null);
+  const [showModal, setShowModal] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
-  const [confirmed, setConfirmed] = useState(false);
 
-  async function handleApply() {
+  async function handleConfirm() {
     if (!selected) return;
     setError("");
     setSuccess("");
@@ -57,12 +57,16 @@ export default function LoanPage() {
         `Pożyczka ${data.loan.amount} PLN została przyznana! Spłata do ${new Date(data.loan.due_date).toLocaleDateString("pl-PL")}.`
       );
       setSelected(null);
-      setConfirmed(false);
+      setShowModal(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Nie udało się utworzyć pożyczki.");
     } finally {
       setLoading(false);
     }
+  }
+
+  function closeModal() {
+    setShowModal(false);
   }
 
   return (
@@ -80,56 +84,85 @@ export default function LoanPage() {
           {OFFERS.map((offer) => {
             const monthly = pmt(offer.amount, offer.interestRate, offer.months);
             const total = monthly * offer.months;
-            const isActive = selected?.id === offer.id;
+            const isSelected = selected?.id === offer.id;
 
             return (
-              <button
+              <div
                 key={offer.id}
-                className={`${styles.offer} ${isActive ? styles.offerActive : ""}`}
-                onClick={() => { setSelected(offer); setConfirmed(false); }}
+                className={`${styles.offer} ${isSelected ? styles.offerActive : ""}`}
               >
-                <div className={styles.offerHeader}>
-                  <span className={styles.offerAmount}>{offer.amount.toLocaleString("pl-PL")} PLN</span>
-                  <span className={styles.offerTag}>{offer.label}</span>
+                <div
+                  className={styles.offerBody}
+                  onClick={() => { setSelected(offer); setError(""); setSuccess(""); }}
+                >
+                  <div className={styles.offerHeader}>
+                    <span className={styles.offerAmount}>{offer.amount.toLocaleString("pl-PL")} PLN</span>
+                    <span className={styles.offerTag}>{offer.label}</span>
+                  </div>
+                  <div className={styles.offerDetails}>
+                    <span>Okres: <strong>{offer.months} mies.</strong></span>
+                    <span>Oprocentowanie: <strong>{offer.interestRate}%</strong></span>
+                    <span>Miesięczna rata: <strong>{monthly.toFixed(2)} PLN</strong></span>
+                    <span>Całkowita spłata: <strong className={styles.totalCost}>{total.toFixed(2)} PLN</strong></span>
+                  </div>
                 </div>
-                <div className={styles.offerDetails}>
-                  <span>Okres: <strong>{offer.months} mies.</strong></span>
-                  <span>Oprocentowanie: <strong>{offer.interestRate}%</strong></span>
-                  <span>Miesięczna rata: <strong>{monthly.toFixed(2)} PLN</strong></span>
-                  <span>Całkowita spłata: <strong className={styles.totalCost}>{total.toFixed(2)} PLN</strong></span>
-                </div>
-              </button>
+                {isSelected && (
+                  <button
+                    className={styles.confirmBtn}
+                    onClick={() => setShowModal(true)}
+                  >
+                    Potwierdź
+                  </button>
+                )}
+              </div>
             );
           })}
         </div>
-
-        {selected && !confirmed && (
-          <div className={styles.confirmBox}>
-            <p>
-              Wybrałeś ofertę: <strong>{selected.amount.toLocaleString("pl-PL")} PLN</strong> na{" "}
-              <strong>{selected.months} mies.</strong> z oprocentowaniem{" "}
-              <strong>{selected.interestRate}%</strong>.
-            </p>
-            <p className={styles.confirmHint}>
-              Miesięczna rata: <strong>{pmt(selected.amount, selected.interestRate, selected.months).toFixed(2)} PLN</strong> |
-              Łącznie: <strong>{(pmt(selected.amount, selected.interestRate, selected.months) * selected.months).toFixed(2)} PLN</strong>
-            </p>
-            <button className={styles.confirmBtn} onClick={() => setConfirmed(true)}>
-              Potwierdź wybór
-            </button>
-          </div>
-        )}
-
-        {confirmed && (
-          <button
-            className={styles.btn}
-            onClick={handleApply}
-            disabled={loading}
-          >
-            {loading ? "Przetwarzanie..." : "Weź pożyczkę"}
-          </button>
-        )}
       </div>
+
+      {showModal && selected && (
+        <div className={styles.overlay} onClick={closeModal}>
+          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+            <h2>Potwierdzenie pożyczki</h2>
+
+            <div className={styles.modalDetails}>
+              <div className={styles.modalRow}>
+                <span>Kwota pożyczki</span>
+                <strong>{selected.amount.toLocaleString("pl-PL")} PLN</strong>
+              </div>
+              <div className={styles.modalRow}>
+                <span>Okres spłaty</span>
+                <strong>{selected.months} mies.</strong>
+              </div>
+              <div className={styles.modalRow}>
+                <span>Oprocentowanie</span>
+                <strong>{selected.interestRate}%</strong>
+              </div>
+              <div className={styles.modalRow}>
+                <span>Miesięczna rata</span>
+                <strong>{pmt(selected.amount, selected.interestRate, selected.months).toFixed(2)} PLN</strong>
+              </div>
+              <div className={styles.modalRow}>
+                <span>Całkowita spłata</span>
+                <strong className={styles.totalCost}>{(pmt(selected.amount, selected.interestRate, selected.months) * selected.months).toFixed(2)} PLN</strong>
+              </div>
+            </div>
+
+            <p className={styles.modalQuestion}>
+              Czy jesteś pewien, że chcesz wziąć tę pożyczkę?
+            </p>
+
+            <div className={styles.modalActions}>
+              <button className={styles.cancelBtn} onClick={closeModal} disabled={loading}>
+                Anuluj
+              </button>
+              <button className={styles.acceptBtn} onClick={handleConfirm} disabled={loading}>
+                {loading ? "Przetwarzanie..." : "Tak, chcę wziąć pożyczkę"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
