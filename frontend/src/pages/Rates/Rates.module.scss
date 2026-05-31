@@ -1,0 +1,147 @@
+.ratesPage {
+  padding: 2rem;
+  min-height: calc(100vh - 80px);
+  background: #f5f7fa;
+}
+
+.ratesContent {
+  max-width: 900px;
+  margin: 0 auto;
+
+  h1 {
+    text-align: center;
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+  }
+}
+
+.loading {
+  text-align: center;
+  padding: 4rem;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.subtitle {
+  text-align: center;
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.date {
+  color: #1a6b3c;
+  font-weight: 500;
+}
+
+.error {
+  background: #fce4e4;
+  color: #c0392b;
+  padding: 0.8rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.currencySelector {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-bottom: 1.5rem;
+
+  h2 {
+    font-size: 1.1rem;
+    margin: 0 0 0.8rem;
+    color: #333;
+  }
+
+  h2:not(:first-child) {
+    margin-top: 1.2rem;
+  }
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chip {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  background: white;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: #1a6b3c;
+    color: #1a6b3c;
+  }
+}
+
+.chipActive {
+  background: #1a6b3c;
+  color: white;
+  border-color: #1a6b3c;
+
+  &:hover {
+    background: #2d8f4e;
+    color: white;
+  }
+}
+
+.ratesTable {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th {
+    background: #f8f9fa;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: #333;
+    border-bottom: 2px solid #eee;
+  }
+
+  td {
+    padding: 0.9rem 1rem;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  tr:hover td {
+    background: #f8f9fa;
+  }
+}
+
+.code {
+  font-weight: 600;
+  color: #1a6b3c;
+}
+
+.rate {
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+@media (max-width: 768px) {
+  .ratesPage {
+    padding: 1rem;
+  }
+
+  .currencySelector {
+    padding: 1rem;
+  }
+}

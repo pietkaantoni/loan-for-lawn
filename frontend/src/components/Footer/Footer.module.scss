@@ -1,0 +1,21 @@
+.footer {
+  background: #1a1a2e;
+  color: #ccc;
+  padding: 1.5rem 2rem;
+  text-align: center;
+}
+
+.content {
+  max-width: 1200px;
+  margin: 0 auto;
+
+  p {
+    margin: 0.3rem 0;
+    font-size: 0.9rem;
+  }
+}
+
+.content p.disclaimer {
+  font-size: 0.8rem;
+  opacity: 0.7;
+}

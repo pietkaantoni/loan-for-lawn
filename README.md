@@ -1,137 +1,173 @@
-# React + TypeScript + Vite
+# Loan for Lawn
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplikacja webowa do zarządzania pożyczkami online. Umożliwia rejestrację,
+logowanie, zaciąganie pożyczek z oprocentowaniem, przeglądanie historii
+pożyczek oraz sprawdzanie aktualnych kursów walut względem PLN.
 
-Currently, two official plugins are available:
+## Technologie
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Frontend:** React 19, TypeScript, Vite, SCSS Modules, React Router, Vitest
+- **Backend:** Node.js, Express, TypeScript, TypeORM, PostgreSQL, Zod, JWT
+- **DevOps:** Docker, Docker Compose, Nginx
 
-## React Compiler
+## Wymagania
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Node.js 24+
+- Docker i Docker Compose (lub PostgreSQL uruchomiony lokalnie)
+- npm
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(["dist"]),
-  {
-    files: ["**/*.{ts,tsx}"],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from "eslint-plugin-react-x";
-import reactDom from "eslint-plugin-react-dom";
-
-export default defineConfig([
-  globalIgnores(["dist"]),
-  {
-    files: ["**/*.{ts,tsx}"],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs["recommended-typescript"],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
-```
-
-# What is in here?
-This will be my log for now, for what I already added to my app and what I plan to add
-## What did I use?
-- Type Script
-- Vite, react (react-router)
-- Docker
-- scss
-- prettier
-
-## Structure of the code
+## Szybki start (Docker)
 
 ```bash
-───loan-for-lawn
-    │   .dockerignore
-    │   .gitignore
-    │   .prettierignore
-    │   .prettierrc
-    │   compose.yaml
-    │   Dockerfile
-    │   eslint.config.js
-    │   index.html
-    │   package-lock.json
-    │   package.json
-    │   README.Docker.md
-    │   README.md
-    │   tsconfig.app.json
-    │   tsconfig.json
-    │   tsconfig.node.json
-    │   vite.config.ts
-    │
-    ├───.idea
-    │
-    ├───node_modules
-    │
-    ├───public
-    │       favicon.svg
-    │       icons.svg
-    │
-    └───src
-        │   App.css
-        │   App.tsx
-        │   index.css
-        │   main.tsx
-        │   
-        ├───assets
-        │       hero.png
-        │       react.svg
-        │       vite.svg
-        │       
-        └───components
-            └───Header
-                    Header.module.scss
-                    Header.tsx
-                    index.ts
+# Sklonuj repozytorium
+git clone https://github.com/twoja-nazwa/loan-for-lawn.git
+cd loan-for-lawn
+
+# Uruchom wszystkie serwisy
+docker compose up --build
 ```
 
-## Specs
-### Header
-A component that shall always be on top and help the user with easier navigation around the website
-It has 3 main boxes:
-* for logo - to return to the begining
-* for links - to navigage around different subsites
-* for logging - to reginser or signin
+Aplikacja będzie dostępna pod adresem:
+- **Frontend:** http://localhost:5173
+- **Backend API:** http://localhost:3001
+
+## Uruchomienie bez Dockera
+
+### 1. Backend
+
+```bash
+cd backend
+cp .env.example .env    # skonfiguruj zmienne środowiskowe
+npm install
+npm run dev
+```
+
+Backend uruchomi się na http://localhost:3001.
+
+**Uwaga:** Backend wymaga PostgreSQL. Skonfiguruj zmienne w `backend/.env`:
+
+- `DATABASE_URL` - np. `postgresql://loanuser:loanpass@localhost:5432/loanforlawn`
+- `JWT_SECRET` - sekret do podpisywania tokenów
+- `CORS_ORIGINS` - dozwolone originy (oddzielone przecinkami)
+
+### 2. Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Frontend uruchomi się na http://localhost:5173 i automatycznie
+przekieruje zapytania `/api` do backendu (Vite proxy).
+
+### 3. Inicjalizacja bazy danych
+
+Po pierwszym uruchomieniu backendu tabele zostaną utworzone automatycznie
+przez TypeORM (opcja `synchronize: true` działa tylko w trybie developerskim).
+
+Aby dodać przykładowe dane (fixtures):
+
+```bash
+cd backend
+npm run seed
+```
+
+Po seedzie dostępne są konta testowe (hasło: `test123`):
+- `jan@example.com` (użytkownik: `jan_kowalski`)
+- `anna@example.com` (użytkownik: `anna_nowak`)
+
+## Testy
+
+### Backend
+```bash
+cd backend
+npm test
+```
+
+Testy obejmują: walidację JWT (generowanie i weryfikacja tokenów),
+walidację schema pożyczek (Zod).
+
+### Frontend
+```bash
+cd frontend
+npm test
+```
+
+Testy obejmują: renderowanie komponentów Header i Home w różnych stanach.
+
+## Struktura projektu
+
+```
+loan-for-lawn/
+├── backend/              # API REST (Express + TypeScript + TypeORM)
+│   ├── src/
+│   │   ├── controllers/  # Logika biznesowa
+│   │   ├── middleware/    # Autoryzacja JWT
+│   │   ├── models/       # Encje TypeORM
+│   │   ├── routes/       # Definicje tras
+│   │   ├── database.ts   # Konfiguracja bazy
+│   │   ├── index.ts      # Punkt wejścia
+│   │   └── seed.ts       # Dane początkowe
+│   ├── tests/            # Testy backendu
+│   └── .env.example      # Wzór konfiguracji
+├── frontend/             # Aplikacja kliencka (React + Vite)
+│   ├── src/
+│   │   ├── components/   # Header, Footer, ProtectedRoute
+│   │   ├── pages/        # Home, Login, Register, Dashboard, Loan, Rates, About, Contact
+│   │   ├── services/     # Komunikacja z API
+│   │   └── types/        # Typy TypeScript
+│   └── tests/            # Testy frontendu
+├── docs/                 # Dokumentacja projektu
+├── compose.yaml          # Konfiguracja Docker Compose
+└── README.md
+```
+
+## API Endpointy
+
+### Autoryzacja
+| Metoda | Ścieżka | Opis |
+|--------|---------|------|
+| POST | `/api/auth/register` | Rejestracja |
+| POST | `/api/auth/login` | Logowanie |
+| GET | `/api/auth/me` | Profil (wymaga tokena) |
+
+### Pożyczki (wymagają tokena)
+| Metoda | Ścieżka | Opis |
+|--------|---------|------|
+| GET | `/api/loans` | Lista pożyczek |
+| POST | `/api/loans` | Nowa pożyczka |
+| GET | `/api/loans/:id` | Szczegóły pożyczki |
+
+### Kursy walut
+| Metoda | Ścieżka | Opis |
+|--------|---------|------|
+| GET | `/api/rates` | Kursy walut (`?currencies=EUR,USD`) |
+| GET | `/api/rates/available` | Lista dostępnych walut |
+
+### Kontakt
+| Metoda | Ścieżka | Opis |
+|--------|---------|------|
+| POST | `/api/contact` | Formularz kontaktowy |
+
+### Status
+| Metoda | Ścieżka | Opis |
+|--------|---------|------|
+| GET | `/api/health` | Status serwera |
+
+## Dokumentacja
+
+Szczegółowa dokumentacja znajduje się w katalogu `docs/`:
+- [Opis aplikacji](docs/opis-aplikacji.md)
+- [Podział pracy](docs/podzial-pracy.md)
+- [Baza danych](docs/baza-danych.md)
+- [Testy](docs/testy.md)
+
+## Uwagi
+
+- Aplikacja wykorzystuje darmowe API NBP (Narodowy Bank Polski) do pobierania kursów walut
+- Hasła są przechowywane w formie zahashowanej (bcrypt)
+- Autoryzacja odbywa się za pomocą tokenów JWT
+- `synchronize: true` w TypeORM działa TYLKO w trybie developerskim (nie w produkcji)
+- W środowisku produkcyjnym zmień `JWT_SECRET` na silny, losowy ciąg znaków
+- Zmienne `CORS_ORIGINS` i `JWT_SECRET` można konfigurować przez zmienne środowiskowe
