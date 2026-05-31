@@ -83,7 +83,7 @@ loan-for-lawn/
 | `Login` | Formularz logowania z walidacją |
 | `Register` | Formularz rejestracji z walidacją |
 | `Dashboard` | Panel użytkownika z listą i statystykami pożyczek |
-| `LoanPage` | Wybór predefiniowanej oferty pożyczki z kalkulacją raty i kosztu całkowitego |
+| `LoanPage` | Wybór predefiniowanej oferty pożyczki z kalkulacją raty i kosztu całkowitego oraz modalem potwierdzenia |
 | `Rates` | Przeglądarka kursów walut z wyborem walut |
 | `About` | Strona informacyjna o firmie |
 | `Contact` | Strona kontaktowa z danymi i formularzem |
