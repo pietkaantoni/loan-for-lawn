@@ -2,46 +2,62 @@ import { useState } from "react";
 import { createLoan } from "../../services/api";
 import styles from "./LoanPage.module.scss";
 
+interface LoanOffer {
+  id: number;
+  amount: number;
+  months: number;
+  interestRate: number;
+  label: string;
+}
+
+const OFFERS: LoanOffer[] = [
+  { id: 1, amount: 1000, months: 6, interestRate: 4.5, label: "Na małe wydatki" },
+  { id: 2, amount: 3000, months: 12, interestRate: 5.5, label: "Na drobne remonty" },
+  { id: 3, amount: 5000, months: 12, interestRate: 6.5, label: "Na większy zakup" },
+  { id: 4, amount: 5000, months: 6, interestRate: 8.0, label: "Szybka gotówka" },
+  { id: 5, amount: 10000, months: 24, interestRate: 7.5, label: "Na większe inwestycje" },
+  { id: 6, amount: 10000, months: 12, interestRate: 9.5, label: "Ekspresowa gotówka" },
+  { id: 7, amount: 25000, months: 24, interestRate: 10.0, label: "Na wymarzony projekt" },
+  { id: 8, amount: 25000, months: 12, interestRate: 12.5, label: "Premium na cel" },
+];
+
+function pmt(principal: number, rate: number, months: number): number {
+  const r = rate / 100 / 12;
+  if (r === 0) return principal / months;
+  const factor = Math.pow(1 + r, months);
+  return (principal * r * factor) / (factor - 1);
+}
+
+function calcDueDate(months: number): string {
+  const d = new Date();
+  d.setMonth(d.getMonth() + months);
+  return d.toISOString().split("T")[0];
+}
+
 export default function LoanPage() {
-  const [amount, setAmount] = useState("");
-  const [interestRate, setInterestRate] = useState("5.0");
-  const [dueDate, setDueDate] = useState("");
+  const [selected, setSelected] = useState<LoanOffer | null>(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
+  const [confirmed, setConfirmed] = useState(false);
 
-  const minDate = new Date();
-  minDate.setDate(minDate.getDate() + 30);
-  const minDateStr = minDate.toISOString().split("T")[0];
-
-  function calculateTotal() {
-    const principal = parseFloat(amount) || 0;
-    const rate = parseFloat(interestRate) || 0;
-    const totalMonths = 12;
-    const monthlyRate = rate / 100 / totalMonths;
-    const payment =
-      (principal * monthlyRate * Math.pow(1 + monthlyRate, totalMonths)) /
-      (Math.pow(1 + monthlyRate, totalMonths) - 1);
-    return (payment * totalMonths).toFixed(2);
-  }
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  async function handleApply() {
+    if (!selected) return;
     setError("");
     setSuccess("");
     setLoading(true);
 
     try {
       const data = await createLoan(
-        parseFloat(amount),
-        parseFloat(interestRate),
-        dueDate
+        selected.amount,
+        selected.interestRate,
+        calcDueDate(selected.months)
       );
       setSuccess(
-        `Pożyczka w wysokości ${parseFloat(data.loan.amount).toFixed(2)} PLN została przyznana!`
+        `Pożyczka ${data.loan.amount} PLN została przyznana! Spłata do ${new Date(data.loan.due_date).toLocaleDateString("pl-PL")}.`
       );
-      setAmount("");
-      setDueDate("");
+      setSelected(null);
+      setConfirmed(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Nie udało się utworzyć pożyczki.");
     } finally {
@@ -54,68 +70,65 @@ export default function LoanPage() {
       <div className={styles.loanCard}>
         <h1>Weź pożyczkę</h1>
         <p className={styles.subtitle}>
-          Wypełnij formularz, aby otrzymać pożyczkę dopasowaną do Twoich potrzeb
+          Wybierz jedną z gotowych ofert i otrzymaj pieniądze od ręki
         </p>
 
         {error && <div className={styles.error}>{error}</div>}
         {success && <div className={styles.success}>{success}</div>}
 
-        <form onSubmit={handleSubmit}>
-          <div className={styles.field}>
-            <label htmlFor="amount">Kwota pożyczki (PLN)</label>
-            <input
-              id="amount"
-              type="number"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              required
-              min="100"
-              max="100000"
-              step="0.01"
-              placeholder="5000"
-            />
-            <span className={styles.hint}>Min: 100 PLN, Max: 100 000 PLN</span>
+        <div className={styles.offers}>
+          {OFFERS.map((offer) => {
+            const monthly = pmt(offer.amount, offer.interestRate, offer.months);
+            const total = monthly * offer.months;
+            const isActive = selected?.id === offer.id;
+
+            return (
+              <button
+                key={offer.id}
+                className={`${styles.offer} ${isActive ? styles.offerActive : ""}`}
+                onClick={() => { setSelected(offer); setConfirmed(false); }}
+              >
+                <div className={styles.offerHeader}>
+                  <span className={styles.offerAmount}>{offer.amount.toLocaleString("pl-PL")} PLN</span>
+                  <span className={styles.offerTag}>{offer.label}</span>
+                </div>
+                <div className={styles.offerDetails}>
+                  <span>Okres: <strong>{offer.months} mies.</strong></span>
+                  <span>Oprocentowanie: <strong>{offer.interestRate}%</strong></span>
+                  <span>Miesięczna rata: <strong>{monthly.toFixed(2)} PLN</strong></span>
+                  <span>Całkowita spłata: <strong className={styles.totalCost}>{total.toFixed(2)} PLN</strong></span>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        {selected && !confirmed && (
+          <div className={styles.confirmBox}>
+            <p>
+              Wybrałeś ofertę: <strong>{selected.amount.toLocaleString("pl-PL")} PLN</strong> na{" "}
+              <strong>{selected.months} mies.</strong> z oprocentowaniem{" "}
+              <strong>{selected.interestRate}%</strong>.
+            </p>
+            <p className={styles.confirmHint}>
+              Miesięczna rata: <strong>{pmt(selected.amount, selected.interestRate, selected.months).toFixed(2)} PLN</strong> |
+              Łącznie: <strong>{(pmt(selected.amount, selected.interestRate, selected.months) * selected.months).toFixed(2)} PLN</strong>
+            </p>
+            <button className={styles.confirmBtn} onClick={() => setConfirmed(true)}>
+              Potwierdź wybór
+            </button>
           </div>
+        )}
 
-          <div className={styles.field}>
-            <label htmlFor="interestRate">Oprocentowanie roczne (%)</label>
-            <input
-              id="interestRate"
-              type="number"
-              value={interestRate}
-              onChange={(e) => setInterestRate(e.target.value)}
-              required
-              min="0.1"
-              max="100"
-              step="0.1"
-            />
-          </div>
-
-          <div className={styles.field}>
-            <label htmlFor="dueDate">Data spłaty</label>
-            <input
-              id="dueDate"
-              type="date"
-              value={dueDate}
-              onChange={(e) => setDueDate(e.target.value)}
-              required
-              min={minDateStr}
-            />
-          </div>
-
-          {amount && interestRate && dueDate && (
-            <div className={styles.summary}>
-              <p>
-                Szacowana całkowita kwota do spłaty:{" "}
-                <strong>{calculateTotal()} PLN</strong>
-              </p>
-            </div>
-          )}
-
-          <button type="submit" disabled={loading} className={styles.btn}>
+        {confirmed && (
+          <button
+            className={styles.btn}
+            onClick={handleApply}
+            disabled={loading}
+          >
             {loading ? "Przetwarzanie..." : "Weź pożyczkę"}
           </button>
-        </form>
+        )}
       </div>
     </div>
   );

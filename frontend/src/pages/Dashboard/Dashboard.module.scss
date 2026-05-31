@@ -140,6 +140,12 @@
   color: #888;
 }
 
+.loanActions {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
 .status {
   padding: 0.4rem 1rem;
   border-radius: 20px;
@@ -155,6 +161,27 @@
 .paid {
   background: #e3f2fd;
   color: #1565c0;
+}
+
+.repayBtn {
+  padding: 0.4rem 1rem;
+  background: #1a6b3c;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #2d8f4e;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
 }
 
 @media (max-width: 768px) {

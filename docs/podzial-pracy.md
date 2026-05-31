@@ -66,7 +66,7 @@ loan-for-lawn/
 | Komponent | Opis |
 |-----------|------|
 | `authController` | Rejestracja, logowanie, pobieranie profilu |
-| `loanController` | Tworzenie i wyświetlanie pożyczek |
+| `loanController` | Tworzenie, wyświetlanie i spłacanie pożyczek |
 | `ratesController` | Integracja z API NBP, lista walut, kursy |
 | `auth middleware` | Weryfikacja tokenów JWT (`generateToken`, `authenticateToken`) |
 | `User model` | Encja użytkownika w bazie danych |
@@ -83,7 +83,7 @@ loan-for-lawn/
 | `Login` | Formularz logowania z walidacją |
 | `Register` | Formularz rejestracji z walidacją |
 | `Dashboard` | Panel użytkownika z listą i statystykami pożyczek |
-| `LoanPage` | Formularz tworzenia nowej pożyczki z kalkulacją |
+| `LoanPage` | Wybór predefiniowanej oferty pożyczki z kalkulacją raty i kosztu całkowitego |
 | `Rates` | Przeglądarka kursów walut z wyborem walut |
 | `About` | Strona informacyjna o firmie |
 | `Contact` | Strona kontaktowa z danymi i formularzem |
@@ -97,8 +97,9 @@ loan-for-lawn/
 
 ### Pożyczki (wymagają tokena)
 - `GET /api/loans` - Lista pożyczek użytkownika
-- `POST /api/loans` - Utworzenie nowej pożyczki
+- `POST /api/loans` - Utworzenie nowej pożyczki (predefiniowane oferty)
 - `GET /api/loans/:id` - Szczegóły pożyczki
+- `PATCH /api/loans/:id/repay` - Spłata aktywnej pożyczki
 
 ### Kursy walut (publiczne)
 - `GET /api/rates` - Kursy walut (opcjonalny filtr `?currencies=EUR,USD`)

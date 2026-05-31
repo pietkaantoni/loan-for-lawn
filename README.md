@@ -1,8 +1,9 @@
 # Loan for Lawn
 
 Aplikacja webowa do zarządzania pożyczkami online. Umożliwia rejestrację,
-logowanie, zaciąganie pożyczek z oprocentowaniem, przeglądanie historii
-pożyczek oraz sprawdzanie aktualnych kursów walut względem PLN.
+logowanie, wybór predefiniowanych ofert pożyczek z oprocentowaniem,
+spłatę pożyczek, przeglądanie historii oraz sprawdzanie aktualnych
+kursów walut względem PLN.
 
 ## Technologie
 
@@ -136,8 +137,9 @@ loan-for-lawn/
 | Metoda | Ścieżka | Opis |
 |--------|---------|------|
 | GET | `/api/loans` | Lista pożyczek |
-| POST | `/api/loans` | Nowa pożyczka |
+| POST | `/api/loans` | Nowa pożyczka (predefiniowane oferty) |
 | GET | `/api/loans/:id` | Szczegóły pożyczki |
+| PATCH | `/api/loans/:id/repay` | Spłata aktywnej pożyczki |
 
 ### Kursy walut
 | Metoda | Ścieżka | Opis |

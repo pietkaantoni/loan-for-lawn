@@ -64,3 +64,29 @@ export async function getLoanById(req: AuthRequest, res: Response): Promise<void
     res.status(500).json({ error: "Internal server error." });
   }
 }
+
+export async function repayLoan(req: AuthRequest, res: Response): Promise<void> {
+  try {
+    const loanRepo = AppDataSource.getRepository(Loan);
+    const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+    const loan = await loanRepo.findOne({
+      where: { id, user_id: req.userId! },
+    });
+
+    if (!loan) {
+      res.status(404).json({ error: "Loan not found." });
+      return;
+    }
+
+    if (loan.status !== "active") {
+      res.status(400).json({ error: "Only active loans can be repaid." });
+      return;
+    }
+
+    loan.status = "paid";
+    await loanRepo.save(loan);
+    res.json({ loan, message: "Loan repaid successfully." });
+  } catch {
+    res.status(500).json({ error: "Internal server error." });
+  }
+}

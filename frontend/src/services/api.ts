@@ -60,6 +60,14 @@ export async function createLoan(amount: number, interest_rate: number, due_date
   return handleResponse<{ loan: Loan }>(res);
 }
 
+export async function repayLoan(id: string): Promise<{ loan: Loan; message: string }> {
+  const res = await fetch(`${API_BASE}/loans/${id}/repay`, {
+    method: "PATCH",
+    headers: { ...authHeaders() },
+  });
+  return handleResponse<{ loan: Loan; message: string }>(res);
+}
+
 export async function getAvailableCurrencies(): Promise<{ popular: RateCurrency[]; others: RateCurrency[] }> {
   const res = await fetch(`${API_BASE}/rates/available`);
   return handleResponse<{ popular: RateCurrency[]; others: RateCurrency[] }>(res);

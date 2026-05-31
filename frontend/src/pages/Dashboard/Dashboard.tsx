@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router";
-import { getMe, getLoans } from "../../services/api";
+import { getMe, getLoans, repayLoan } from "../../services/api";
 import type { User, Loan } from "../../types";
 import styles from "./Dashboard.module.scss";
 
@@ -8,6 +8,7 @@ export default function Dashboard() {
   const [user, setUser] = useState<User | null>(null);
   const [loans, setLoans] = useState<Loan[]>([]);
   const [loading, setLoading] = useState(true);
+  const [repayingId, setRepayingId] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -27,6 +28,20 @@ export default function Dashboard() {
 
     fetchData();
   }, [navigate]);
+
+  async function handleRepay(id: string) {
+    setRepayingId(id);
+    try {
+      await repayLoan(id);
+      setLoans((prev) =>
+        prev.map((l) => (l.id === id ? { ...l, status: "paid" } : l))
+      );
+    } catch {
+      // ignore
+    } finally {
+      setRepayingId(null);
+    }
+  }
 
   function formatDate(dateStr: string) {
     return new Date(dateStr).toLocaleDateString("pl-PL");
@@ -94,13 +109,24 @@ export default function Dashboard() {
                   Data ważności: {formatDate(loan.due_date)}
                 </span>
               </div>
-              <span
-                className={`${styles.status} ${
-                  loan.status === "active" ? styles.active : styles.paid
-                }`}
-              >
-                {loan.status === "active" ? "Aktywna" : "Spłacona"}
-              </span>
+              <div className={styles.loanActions}>
+                <span
+                  className={`${styles.status} ${
+                    loan.status === "active" ? styles.active : styles.paid
+                  }`}
+                >
+                  {loan.status === "active" ? "Aktywna" : "Spłacona"}
+                </span>
+                {loan.status === "active" && (
+                  <button
+                    className={styles.repayBtn}
+                    onClick={() => handleRepay(loan.id)}
+                    disabled={repayingId === loan.id}
+                  >
+                    {repayingId === loan.id ? "..." : "Spłać"}
+                  </button>
+                )}
+              </div>
             </div>
           ))}
         </div>
